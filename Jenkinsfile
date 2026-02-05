@@ -3,27 +3,17 @@ pipeline {
 
   environment {
     DOCKER_IMAGE = "lpintoamsys/kubernetescode"
-    IMAGE_TAG    = "${BUILD_NUMBER}"
+    IMAGE_TAG = "${BUILD_NUMBER}"
   }
 
   stages {
 
-    stage('Checkout') {
-      agent any
-      steps {
-        checkout scm
-      }
-    }
-
-    stage('Build & Push Image (Kaniko)') {
+    stage('Build & Push (Kaniko)') {
       agent {
         kubernetes {
           yaml """
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    app: kaniko-builder
 spec:
   restartPolicy: Never
   containers:
@@ -48,26 +38,18 @@ spec:
       steps {
         container('kaniko') {
           sh """
-          echo "🚀 Starting Kaniko build"
+          echo "Running on agent:"
+          hostname
+          pwd
+
           /kaniko/executor \
             --dockerfile=Dockerfile \
             --context=dir:///workspace \
             --destination=${DOCKER_IMAGE}:${IMAGE_TAG} \
-            --destination=${DOCKER_IMAGE}:latest \
-            --cache=true \
-            --cache-repo=${DOCKER_IMAGE}-cache
+            --destination=${DOCKER_IMAGE}:latest
           """
         }
       }
-    }
-  }
-
-  post {
-    success {
-      echo "✅ Image pushed successfully"
-    }
-    failure {
-      echo "❌ Build failed"
     }
   }
 }
