@@ -21,15 +21,10 @@ pipeline {
           yaml """
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    app: kaniko-builder
 spec:
-  restartPolicy: Never
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:v1.23.2
-    imagePullPolicy: Always
     command:
     - /kaniko/executor
     args:
@@ -52,7 +47,7 @@ spec:
 
       steps {
         container('kaniko') {
-          sh 'echo "Building and pushing image with Kaniko..."'
+          sh 'echo "Kaniko build & push running"'
         }
       }
     }
@@ -60,10 +55,10 @@ spec:
 
   post {
     success {
-      echo "✅ Image pushed successfully: ${DOCKER_IMAGE}:${IMAGE_TAG}"
+      echo "✅ Image pushed successfully"
     }
     failure {
-      echo "❌ Image build failed"
+      echo "❌ Build failed"
     }
   }
 }
