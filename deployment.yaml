@@ -17,5 +17,12 @@ spec:
       containers:
         - name: app
           image: lpintoamsys/kubernetescode:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 3
+            periodSeconds: 5
