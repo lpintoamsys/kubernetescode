@@ -26,6 +26,7 @@ spec:
   }
 
   options {
+    buildDiscarder(logRotator(numToKeepStr: '1'))
     skipDefaultCheckout(true)
   }
 
