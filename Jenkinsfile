@@ -28,10 +28,12 @@ spec:
   restartPolicy: Never
   containers:
   - name: kaniko
-    image: gcr.io/kaniko-project/executor:v1.23.2
+    image: gcr.io/kaniko-project/executor:debug
     imagePullPolicy: Always
     command:
-    - cat
+      - /busybox/sh
+      - -c
+      - cat
     tty: true
     volumeMounts:
     - name: docker-config
@@ -47,15 +49,14 @@ spec:
       steps {
         container('kaniko') {
           sh """
-          echo "🔨 Starting Kaniko build..."
+          echo "🚀 Starting Kaniko build..."
           /kaniko/executor \
             --dockerfile=Dockerfile \
             --context=dir:///workspace \
             --destination=${DOCKER_IMAGE}:${IMAGE_TAG} \
             --destination=${DOCKER_IMAGE}:latest \
             --cache=true \
-            --cache-repo=${DOCKER_IMAGE}-cache \
-            --snapshot-mode=redo
+            --cache-repo=${DOCKER_IMAGE}-cache
           """
         }
       }
@@ -64,7 +65,7 @@ spec:
 
   post {
     success {
-      echo "✅ Image pushed: ${DOCKER_IMAGE}:${IMAGE_TAG}"
+      echo "✅ Image pushed successfully: ${DOCKER_IMAGE}:${IMAGE_TAG}"
     }
     failure {
       echo "❌ Kaniko build failed"
