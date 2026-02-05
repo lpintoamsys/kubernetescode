@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetescode
+  labels:
+    app: kubernetescode
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubernetescode
+  template:
+    metadata:
+      labels:
+        app: kubernetescode
+    spec:
+      containers:
+        - name: app
+          image: lpintoamsys/kubernetescode:latest
+          ports:
+            - containerPort: 5000
