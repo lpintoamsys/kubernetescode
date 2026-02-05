@@ -21,19 +21,18 @@ pipeline {
           yaml """
 apiVersion: v1
 kind: Pod
+metadata:
+  labels:
+    app: kaniko-builder
 spec:
+  restartPolicy: Never
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:v1.23.2
+    imagePullPolicy: Always
     command:
-    - /kaniko/executor
-    args:
-    - --dockerfile=Dockerfile
-    - --context=dir:///workspace
-    - --destination=${DOCKER_IMAGE}:${IMAGE_TAG}
-    - --destination=${DOCKER_IMAGE}:latest
-    - --cache=true
-    - --cache-repo=${DOCKER_IMAGE}-cache
+    - cat
+    tty: true
     volumeMounts:
     - name: docker-config
       mountPath: /kaniko/.docker
@@ -47,7 +46,17 @@ spec:
 
       steps {
         container('kaniko') {
-          sh 'echo "Kaniko build & push running"'
+          sh """
+          echo "🔨 Starting Kaniko build..."
+          /kaniko/executor \
+            --dockerfile=Dockerfile \
+            --context=dir:///workspace \
+            --destination=${DOCKER_IMAGE}:${IMAGE_TAG} \
+            --destination=${DOCKER_IMAGE}:latest \
+            --cache=true \
+            --cache-repo=${DOCKER_IMAGE}-cache \
+            --snapshot-mode=redo
+          """
         }
       }
     }
@@ -55,10 +64,10 @@ spec:
 
   post {
     success {
-      echo "✅ Image pushed successfully"
+      echo "✅ Image pushed: ${DOCKER_IMAGE}:${IMAGE_TAG}"
     }
     failure {
-      echo "❌ Build failed"
+      echo "❌ Kaniko build failed"
     }
   }
 }
