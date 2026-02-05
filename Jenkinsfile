@@ -29,7 +29,6 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
-    imagePullPolicy: Always
     command:
       - /busybox/sh
       - -c
@@ -49,7 +48,7 @@ spec:
       steps {
         container('kaniko') {
           sh """
-          echo "🚀 Starting Kaniko build..."
+          echo "🚀 Starting Kaniko build"
           /kaniko/executor \
             --dockerfile=Dockerfile \
             --context=dir:///workspace \
@@ -65,10 +64,10 @@ spec:
 
   post {
     success {
-      echo "✅ Image pushed successfully: ${DOCKER_IMAGE}:${IMAGE_TAG}"
+      echo "✅ Image pushed successfully"
     }
     failure {
-      echo "❌ Kaniko build failed"
+      echo "❌ Build failed"
     }
   }
 }
