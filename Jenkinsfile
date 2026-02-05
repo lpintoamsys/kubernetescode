@@ -15,7 +15,7 @@ spec:
       - cat
     tty: true
   - name: kubectl
-    image: bitnami/kubectl:1.29.9
+    image: rancher/kubectl:v1.29.9
     command:
       - /bin/sh
       - -c
