@@ -1,6 +1,7 @@
 pipeline {
   agent {
     kubernetes {
+      slaveConnectTimeout 600
       yaml """
 apiVersion: v1
 kind: Pod
@@ -9,6 +10,7 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:v1.23.2-debug
+    imagePullPolicy: IfNotPresent
     command:
       - /busybox/sh
       - -c
@@ -16,6 +18,7 @@ spec:
     tty: true
   - name: kubectl
     image: dtzar/helm-kubectl:3.14.0
+    imagePullPolicy: IfNotPresent
     command:
       - /bin/sh
       - -c
