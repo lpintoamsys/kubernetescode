@@ -15,7 +15,7 @@ spec:
       - cat
     tty: true
   - name: kubectl
-    image: rancher/kubectl:v1.29.9
+    image: dtzar/helm-kubectl:3.14.0
     command:
       - /bin/sh
       - -c
